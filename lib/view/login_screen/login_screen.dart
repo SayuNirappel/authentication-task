@@ -1,8 +1,22 @@
+import 'package:auth_task/main.dart';
+import 'package:auth_task/view/home_screen/home_screen.dart';
+import 'package:auth_task/view/registration_screen/registration_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final semailkey = GlobalKey<FormState>();
+  final spasswordkey = GlobalKey<FormState>();
+
+  TextEditingController semailcontroller = TextEditingController();
+  TextEditingController spasswordcontroller = TextEditingController();
   @override
   Widget build(BuildContext context) {
     // Todo : write code  create controllers and form keys
@@ -14,48 +28,29 @@ class LoginScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
-                child: Text(
-                  "Sign in to Your Account",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                  ),
+              Text(
+                "Sign in to Your Account",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               SizedBox(height: 30),
 
               // email input fied
-              TextFormField(
-                decoration: InputDecoration(
-                  contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                  hintText: "Your Eamil Address",
-                  hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 16, fontWeight: FontWeight.normal),
-                  enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Colors.grey.shade400,
-                      )),
-                  focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Color(0xff1a75d2),
-                      )),
-                  errorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Colors.red.shade400,
-                      )),
-                ),
-              ),
-              SizedBox(height: 20),
-              // password input field
-              TextFormField(
-                decoration: InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                    hintText: "Your Password",
-                    hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 16, fontWeight: FontWeight.normal),
+              Form(
+                key: semailkey,
+                child: TextFormField(
+                  controller: semailcontroller,
+                  decoration: InputDecoration(
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                    hintText: "Your Eamil Address",
+                    hintStyle: TextStyle(
+                        color: Colors.grey.shade500,
+                        fontSize: 16,
+                        fontWeight: FontWeight.normal),
                     enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(
@@ -71,10 +66,57 @@ class LoginScreen extends StatelessWidget {
                         borderSide: BorderSide(
                           color: Colors.red.shade400,
                         )),
-                    suffixIcon: Icon(
-                      Icons.visibility_off_rounded,
-                      color: Colors.grey,
-                    )),
+                  ),
+                  validator: (value) {
+                    if (semailcontroller.text.contains("@")) {
+                      return null;
+                    }
+                    return "Email Mismatch";
+                  },
+                ),
+              ),
+              SizedBox(height: 20),
+              // password input field
+              Form(
+                key: spasswordkey,
+                child: TextFormField(
+                  obscureText: true,
+                  obscuringCharacter: "\*",
+                  controller: spasswordcontroller,
+                  decoration: InputDecoration(
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      hintText: "Your Password",
+                      hintStyle: TextStyle(
+                          color: Colors.grey.shade500,
+                          fontSize: 16,
+                          fontWeight: FontWeight.normal),
+                      enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade400,
+                          )),
+                      focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: Color(0xff1a75d2),
+                          )),
+                      errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: Colors.red.shade400,
+                          )),
+                      suffixIcon: Icon(
+                        Icons.visibility_off_rounded,
+                        color: Colors.grey,
+                      )),
+                  validator: (value) {
+                    if (spasswordcontroller.text.isNotEmpty) {
+                      return null;
+                    }
+                    return "Wrong PassWord";
+                  },
+                ),
               ),
               SizedBox(height: 20),
               Row(
@@ -118,7 +160,34 @@ class LoginScreen extends StatelessWidget {
               ),
               SizedBox(height: 20),
               InkWell(
-                onTap: () {
+                onTap: () async {
+                  if (semailkey.currentState!.validate() &&
+                      spasswordkey.currentState!.validate()) {
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+
+                    String? storedEmail = prefs.getString("email");
+                    String? storedPassword = prefs.getString("pass");
+
+                    if (semailcontroller.text == storedEmail &&
+                        spasswordcontroller.text == storedPassword) {
+                      await prefs.setBool("islogged", true);
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HomeScreen(),
+                          ),
+                          (Route) => false);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(
+                          "Invalid Login",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        backgroundColor: Colors.red,
+                      ));
+                    }
+                  }
                   // Todo : write code  to navigate to home screen on successful Login with registered credentials
                 },
                 child: Container(
@@ -152,7 +221,10 @@ class LoginScreen extends StatelessWidget {
                   ),
                   TextButton(
                       onPressed: () {
-                        // Todo : write code  to navigate to registration screen
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => RegistrationScreen()));
                       },
                       child: Text(
                         "Sign Up",

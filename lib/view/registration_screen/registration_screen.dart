@@ -1,7 +1,23 @@
+import 'package:auth_task/main.dart';
+import 'package:auth_task/view/login_screen/login_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class RegistrationScreen extends StatelessWidget {
+class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
+
+  @override
+  State<RegistrationScreen> createState() => _RegistrationScreenState();
+}
+
+class _RegistrationScreenState extends State<RegistrationScreen> {
+  // final formKey = GlobalKey<FormState>();
+  final formkey1 = GlobalKey<FormState>();
+  final formkey2 = GlobalKey<FormState>();
+  final formkey3 = GlobalKey<FormState>();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passController = TextEditingController();
+  TextEditingController confirmPassController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -11,99 +27,157 @@ class RegistrationScreen extends StatelessWidget {
         appBar: AppBar(),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
+          //child: Form(
+          // key: formKey,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
-                child: Text(
-                  "Sign Up for Free",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                  ),
+              Text(
+                "Sign Up for Free",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               SizedBox(height: 30),
-              TextFormField(
-                decoration: InputDecoration(
-                  contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                  hintText: "Your Eamil Address",
-                  hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 16, fontWeight: FontWeight.normal),
-                  enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Colors.grey.shade400,
-                      )),
-                  focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Color(0xff1a75d2),
-                      )),
-                  errorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Colors.red.shade400,
-                      )),
+              Form(
+                key: formkey1,
+                child: TextFormField(
+                  controller: emailController,
+                  decoration: InputDecoration(
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                    hintText: "Your Eamil Address",
+                    hintStyle: TextStyle(
+                        color: Colors.grey.shade500,
+                        fontSize: 16,
+                        fontWeight: FontWeight.normal),
+                    enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade400,
+                        )),
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Color(0xff1a75d2),
+                        )),
+                    errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Colors.red.shade400,
+                        )),
+                  ),
+                  validator: (value) {
+                    if (emailController.text.contains("@")) {
+                      return null;
+                    } else {
+                      return "Wrong Email";
+                    }
+                  },
                 ),
               ),
               SizedBox(height: 20),
-              TextFormField(
-                decoration: InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                    hintText: "Your Password",
-                    hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 16, fontWeight: FontWeight.normal),
-                    enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Colors.grey.shade400,
-                        )),
-                    focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Color(0xff1a75d2),
-                        )),
-                    errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Colors.red.shade400,
-                        )),
-                    suffixIcon: Icon(
-                      Icons.visibility_off_rounded,
-                      color: Colors.grey,
-                    )),
+              Form(
+                key: formkey2,
+                child: TextFormField(
+                  obscureText: true,
+                  obscuringCharacter: "\*",
+                  controller: passController,
+                  decoration: InputDecoration(
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      hintText: "Your Password",
+                      hintStyle: TextStyle(
+                          color: Colors.grey.shade500,
+                          fontSize: 16,
+                          fontWeight: FontWeight.normal),
+                      enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade400,
+                          )),
+                      focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: Color(0xff1a75d2),
+                          )),
+                      errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: Colors.red.shade400,
+                          )),
+                      suffixIcon: Icon(
+                        Icons.visibility_off_rounded,
+                        color: Colors.grey,
+                      )),
+                  validator: (value) {
+                    if (passController.text.isNotEmpty) {
+                      return null;
+                    }
+                    return "Enter a valid Password";
+                  },
+                ),
               ),
               SizedBox(height: 20),
-              TextFormField(
-                decoration: InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                    hintText: "Confirm Your Password",
-                    hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 16, fontWeight: FontWeight.normal),
-                    enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Colors.grey.shade400,
-                        )),
-                    focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Color(0xff1a75d2),
-                        )),
-                    errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Colors.red.shade400,
-                        )),
-                    suffixIcon: Icon(
-                      Icons.visibility_off_rounded,
-                      color: Colors.grey,
-                    )),
+              Form(
+                key: formkey3,
+                child: TextFormField(
+                  obscureText: true,
+                  obscuringCharacter: "\*",
+                  controller: confirmPassController,
+                  decoration: InputDecoration(
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      hintText: "Confirm Your Password",
+                      hintStyle: TextStyle(
+                          color: Colors.grey.shade500,
+                          fontSize: 16,
+                          fontWeight: FontWeight.normal),
+                      enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade400,
+                          )),
+                      focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: Color(0xff1a75d2),
+                          )),
+                      errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: Colors.red.shade400,
+                          )),
+                      suffixIcon: Icon(
+                        Icons.visibility_off_rounded,
+                        color: Colors.grey,
+                      )),
+                  validator: (value) {
+                    if (passController.text == confirmPassController.text) {
+                      return null;
+                    }
+                    return "Passwords Mismatch";
+                  },
+                ),
               ),
               SizedBox(height: 20),
               InkWell(
-                onTap: () {
+                onTap: () async {
                   // Todo : write code  to navigate to login screen on successful registration
+                  //formKey.currentState!.validate();
+                  if (formkey1.currentState!.validate() &&
+                      formkey2.currentState!.validate() &&
+                      formkey3.currentState!.validate()) {
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    await prefs.setString("email", emailController.text);
+                    await prefs.setString("pass", passController.text);
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => LoginScreen()));
+                  }
                 },
                 child: Container(
                   padding: EdgeInsets.symmetric(vertical: 10),
@@ -136,7 +210,7 @@ class RegistrationScreen extends StatelessWidget {
                   ),
                   TextButton(
                       onPressed: () {
-                        // Todo : write code  to navigate to Login screen
+                        Navigator.pop(context);
                       },
                       child: Text(
                         "Sign In",
@@ -150,6 +224,7 @@ class RegistrationScreen extends StatelessWidget {
               )
             ],
           ),
+          //),
         ));
   }
 }
